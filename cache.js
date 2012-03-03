@@ -4,7 +4,6 @@ var cache = {
 	storage : {},
 
 	get : function(key) {
-		key = key.trim();
 		var value = "";
 		if (this.storage[key]) {
 			value = "VALUE " + key + " " + this.storage[key]['flags'] + " " + this.storage[key]['size'] + "\r\n"+this.storage[key]['value'] + CRLF;
@@ -12,21 +11,24 @@ var cache = {
 		return value + "END";
 	},
 
-	set : function() {
+	set : function(command) {
+		var separator = command.indexOf(CRLF);
+		var params = command.substring(0, separator).trim().split(' ');
 		
-		var args = Array.prototype.slice.call(arguments);
-		var key = args.shift();
-		var flags = args.shift();
-		var exptime = args.shift();
-		var value = args.join(' ');
+		var key = params[0];
+		var flags = params[1];
+		var exptime = params[2];
+		var size = params[3];
+		
+		var data = command.substring(separator).trim();
+		
+		
+		if (size && data && data.length != size) {
+			console.info(command);
+			return "CLIENT_ERROR Wrong size expecting: "+size+"  received:" + data.length;
+		}
 
-		var split = value.indexOf(CRLF);	
-		var size = value.substring(0, split);
-		value = value.substring(split).trim();
-		
-		if (value.length != size) return "CLIENT_ERROR Wrong specified size, passed: "+ size + "and it was really: "+value.length;
-		
-		this.storage[key] = { 'flags': flags, 'exptime': exptime, 'size': size, 'value': value};
+		this.storage[key] = { 'flags': flags, 'exptime': exptime, 'size': size, 'value': data};
 		
 		return "STORED";
 	},
@@ -34,10 +36,11 @@ var cache = {
 
 
 	dispatch : function(cmd) {
-		var params = cmd.toString().split(' ');
-		var command = params.shift();
+		cmd = cmd.toString();
+		var firstSpace = cmd.indexOf(' ');
+		var command = cmd.substring(0,firstSpace);
 		if (this.hasOwnProperty(command)) {
-			return this[command].apply(this, params) + CRLF;
+			return this[command].call(this, cmd.substring(firstSpace).trim()) + CRLF;
 		} else {
 			return "ERROR" + CRLF;
 		}

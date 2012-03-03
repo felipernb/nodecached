@@ -1,17 +1,24 @@
 import memcache
 import sys
+import os
+import random
+import string
 
 mc = memcache.Client(['127.0.0.1:11211'], debug=1)
 
-x = { "a" : "b",
-	  "b" : "c",
-	  "c" : "c d",
-	  "d" : "e\nf a"}
+x = { }
+
+for i in xrange(1,1000):	
+	x[''.join(random.choice(string.digits+string.letters ) for x in range(random.randint(2,32)))] = ''.join(random.choice(string.printable) for x in range(random.randint(2,255))).strip()
 
 for k,v in x.iteritems():
 	mc.set(k, v)
 
 for k, v in x.iteritems():
-	assert mc.get(k) == v
+	result = mc.get(k)
+	if result != v:
+		print "Expected: %s - Received: %s" % (v, result)
+		sys.exit()
+	
 	sys.stdout.write(".")
 print ""

@@ -4,9 +4,9 @@ cache =
 	storage: {}
 	
 	get: (key) ->
-		value = ""
-		value = "VALUE " + key + " " + @storage[key]["flags"] + " " + @storage[key]["size"] + "\r\n" + @storage[key]["value"] + CRLF	if @storage[key]
-		value + "END"
+		if @storage[key]
+			return "VALUE " + key + " " + @storage[key]["flags"] + " " + @storage[key]["size"] + "\r\n" + @storage[key]["value"] + CRLF	+ "END"
+		"END"
 
 	set: (command) ->
 		separator = command.indexOf(CRLF)
@@ -31,6 +31,15 @@ cache =
 
 		"STORED"
 
+	delete: (command) ->
+		params = command.split(' ')
+		key = params[0]
+		if @storage[key]
+			delete @storage[key]
+			return "DELETED"
+		else
+			return "NOT_FOUND"
+	
 	dump: ->
 		console.info @storage
 

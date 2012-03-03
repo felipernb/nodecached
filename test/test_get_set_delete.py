@@ -21,4 +21,17 @@ for k, v in x.iteritems():
 		sys.exit()
 	
 	sys.stdout.write(".")
+
+for k, v in x.iteritems():
+	mc.delete(k)
+	if mc.get(k):
+		print "Expected %s to be deleted" % k
+		sys.exit()
+	
+	sys.stdout.write(".")
+
+
+
+
+
 print ""

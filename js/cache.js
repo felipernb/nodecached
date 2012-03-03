@@ -9,9 +9,9 @@
       var value;
       value = "";
       if (this.storage[key]) {
-        value = "VALUE " + key + " " + this.storage[key]["flags"] + " " + this.storage[key]["size"] + "\r\n" + this.storage[key]["value"] + CRLF;
+        return "VALUE " + key + " " + this.storage[key]["flags"] + " " + this.storage[key]["size"] + "\r\n" + this.storage[key]["value"] + CRLF + "END";
       }
-      return value + "END";
+      return "END";
     },
     set: function(command) {
       var data, exptime, flags, key, params, separator, size;
@@ -33,6 +33,17 @@
         value: data
       };
       return "STORED";
+    },
+    "delete": function(command) {
+      var key, params;
+      params = command.split(' ');
+      key = params[0];
+      if (this.storage[key]) {
+        delete this.storage[key];
+        return "DELETED";
+      } else {
+        return "NOT_FOUND";
+      }
     },
     dump: function() {
       return console.info(this.storage);

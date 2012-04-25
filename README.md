@@ -2,7 +2,7 @@
 
 Felipe Ribeiro <felipernb@gmail.com>
 
-A memcached server wrote in node, following the protocol described at
+A memcached server wrote in NodeJS (using CoffeeScript), following the protocol described at
 http://code.sixapart.com/svn/memcached/trunk/server/doc/protocol.txt
 
 ## roadmap

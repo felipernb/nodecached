@@ -1,6 +1,6 @@
 net = require("net")
 cache = require("./cache")
-
+cache.init({ 'max_memory': 20}) 
 server = net.createServer((c) ->
 	console.log "client connected"
 
